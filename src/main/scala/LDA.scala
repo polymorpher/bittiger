@@ -4,7 +4,7 @@ import scala.collection.mutable
 import scala.io.Source
 
 /**
-  * Created by Aaron Li (Polymorpher, polymorpher.darkiron@gmail.com) on 4/28/17.
+  * Created by Aaron Li (aaron@potatos.io) on 4/28/17.
   */
 class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, beta: Double) {
   // performance hack - pack two ints into a single long
@@ -143,8 +143,8 @@ object TextDemo {
     val sdocs = texts.map(t => NLPCore.parse(t).flatMap { case (k, v) => Array.fill(v)(k) }.toSeq)
     val dict = new Dict()
     val docs = sdocs.map(_.map(dict.add))
-    val lda = new LDA(docs, 8, dict.lookup.size, 0.1, 0.1)
-    0 until 100 foreach { i =>
+    val lda = new LDA(docs, 32, dict.lookup.size, 0.1, 0.1)
+    0 until 1000 foreach { i =>
       println(s"Iteration $i")
       lda.run(1)
       lda.computePhi().print(dict, lda.getTopicProbs())

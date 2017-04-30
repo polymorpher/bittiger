@@ -13,7 +13,7 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 /**
-  * Created by Aaron Li (Polymorpher, polymorpher.darkiron@gmail.com) on 4/28/17.
+  * Created by Aaron Li (aaron@potatos.io) on 4/28/17.
   */
 case class SNAPReview(reviewerID: String, asin: String, reviewerName: String, helpful: Seq[Int], reviewText: String, overall: Double, summary: String, unixReviewTime: Long, reviewTime: String)
 

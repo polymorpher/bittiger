@@ -122,7 +122,7 @@ object BOWDemo {
     }).toSeq
 
     // initialise LDA instance, with hyperparameters and document data
-    val lda = new LDA(docs, 8, dict.lookup.size, 0.1, 0.1)
+    val lda = new LDA(docs, 32, dict.lookup.size, 0.1, 0.1)
 
     // run Gibbs sampling and print results for each iteration
     0 until 100 foreach { i =>

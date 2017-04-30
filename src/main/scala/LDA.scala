@@ -1,3 +1,5 @@
+import java.io.File
+
 import scala.collection.mutable
 import scala.io.Source
 
@@ -90,8 +92,8 @@ class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, bet
     nk.map(e => e.toDouble / totalNumTokens)
 }
 
-// Bag of words reader
-object BOWReader {
+// Bag of words demo
+object BOWDemo {
 
   // utility for printing topics and word probabilities
   // adding an implicit method to type Array[Map[Int,Double]]
@@ -131,3 +133,21 @@ object BOWReader {
   }
 }
 
+object TextDemo {
+
+  import BOWDemo.PrinterUtil
+
+  def main(args: Array[String]): Unit = {
+    val sr = new SNAPReader
+    val texts = sr.read(new File(getClass.getResource("/text/SanDiskUltra64GB.txt").toURI)).map(_.reviewText)
+    val sdocs = texts.map(t => NLPCore.parse(t).flatMap { case (k, v) => Array.fill(v)(k) }.toSeq)
+    val dict = new Dict()
+    val docs = sdocs.map(_.map(dict.add))
+    val lda = new LDA(docs, 8, dict.lookup.size, 0.1, 0.1)
+    0 until 100 foreach { i =>
+      println(s"Iteration $i")
+      lda.run(1)
+      lda.computePhi().print(dict, lda.getTopicProbs())
+    }
+  }
+}

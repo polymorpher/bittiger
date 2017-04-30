@@ -51,6 +51,18 @@ class Dict {
       lookup.put(i, w)
     }
   }
+
+  def add(w: String): Int = {
+    this.synchronized {
+      if (rlookup.contains(w)) {
+        return rlookup(w)
+      }
+      val id = lookup.size
+      lookup.put(id, w)
+      rlookup.put(w, id)
+      id
+    }
+  }
 }
 
 object NLPCore {
@@ -62,6 +74,7 @@ object NLPCore {
     val lines = scala.io.Source.fromInputStream(stream).getLines
     stopwords = HashSet(lines.toSeq: _*)
   }
+
   loadStopWords()
 
   def parse(text: String): Map[String, Int] = {

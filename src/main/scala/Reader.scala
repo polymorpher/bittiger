@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.collection.immutable.{HashMap, HashSet}
-import scala.collection.parallel._
 import java.io.{BufferedWriter, File, FileWriter}
 
 import org.clulab.processors.fastnlp.FastNLPProcessor
@@ -25,8 +24,6 @@ class SNAPReader {
   def read(file: File): Seq[SNAPReview] = {
     scala.io.Source.fromFile(file).getLines().map { line =>
       mapper.readValue(line, classOf[SNAPReview])
-      //      val jj = j.asInstanceOf[Map[String, Any]]
-      //      jj("reviewText").asInstanceOf[String]
     }.filter(e => e.reviewText != "").toList
   }
 
@@ -65,7 +62,6 @@ object NLPCore {
     val lines = scala.io.Source.fromInputStream(stream).getLines
     stopwords = HashSet(lines.toSeq: _*)
   }
-
   loadStopWords()
 
   def parse(text: String): Map[String, Int] = {
@@ -73,12 +69,9 @@ object NLPCore {
     val d = proc.mkDocument(text)
     proc.tagPartsOfSpeech(d)
     proc.lemmatize(d)
-    //    proc.recognizeNamedEntities(d)
     for (s <- d.sentences) {
       val lemmas = s.lemmas.get.map(_.toLowerCase)
-      //      val ner = s.entities.get
       val pos = s.tags.get
-      //      println(s.words.toSeq, lemmas.toSeq, ner.toSeq, pos.toSeq)
       for (i <- s.words.indices) {
         if (!stopwords.contains(lemmas(i))) {
           tokens += s"${lemmas(i)}#${pos(i)}"

@@ -1,7 +1,7 @@
-*.iml
+#*.iml
 *.ipr
 *.iws
-.idea
+#.idea
 out
 target
 *.class

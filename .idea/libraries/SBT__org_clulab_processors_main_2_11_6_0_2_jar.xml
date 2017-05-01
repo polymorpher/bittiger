@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SBT: org.clulab:processors-main_2.11:6.0.2:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.clulab/processors-main_2.11/jars/processors-main_2.11-6.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/org.clulab/processors-main_2.11/srcs/processors-main_2.11-6.0.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

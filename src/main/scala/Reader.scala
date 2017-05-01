@@ -87,7 +87,7 @@ object NLPCore {
       val pos = s.tags.get
       for (i <- s.words.indices) {
         if (!stopwords.contains(lemmas(i))) {
-          tokens += s"${lemmas(i)}#${pos(i)}"
+          tokens += s"${lemmas(i)}"
         }
       }
     }

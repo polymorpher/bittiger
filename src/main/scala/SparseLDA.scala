@@ -5,7 +5,7 @@ import scala.collection.mutable
   */
 
 class SparseLDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, beta: Double)
-  extends LDA(docs, numTopics, numVocab, alpha, beta) {
+  extends BasicLDA(docs, numTopics, numVocab, alpha, beta) {
   var (bs, bq, br) = (0.0, 0.0, 0.0)
   val (as, aq, ar) = (Array.fill(numTopics)(0.0), mutable.LongMap[Double]().withDefaultValue(0), mutable.LongMap[Double]().withDefaultValue(0))
   val (mdk, mwk) = (Array.fill(docs.length)(mutable.Set[Int]()), Array.fill(numVocab + 1)(mutable.Set[Int]()))

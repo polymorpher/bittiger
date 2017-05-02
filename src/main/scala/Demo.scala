@@ -1,4 +1,8 @@
-import java.io.File
+import java.io.{BufferedWriter, File, FileWriter}
+
+import TextDemo.getClass
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.scala.DefaultScalaModule
 
 import scala.io.Source
 
@@ -38,12 +42,13 @@ object BOWDemo {
 
     // initialise LDA instance, with hyperparameters and document data
     var lda: LDA = null
-    if (args.length > 1 && args(1) == "lda") {
-      lda = new LDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
-    } else {
+    if (args.length > 0 && args(0) == "lda") {
+      lda = new BasicLDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
+    } else if (args.length > 0 && args(0) == "sparselda") {
       lda = new SparseLDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
+    } else{
+      lda = new MalletLDA(docs, numTopics)
     }
-
     // run Gibbs sampling and print results for each iteration
     0 until 100 foreach { i =>
       println(s"Iteration $i")
@@ -71,9 +76,11 @@ object TextDemo {
     println(s"num docs = ${docs.length} avg doc length = ${docs.map(_.length).sum.toDouble / docs.length} num vocab = ${dict.lookup.size} num topics = $numTopics")
     var lda: LDA = null
     if (args.length > 0 && args(0) == "lda") {
-      lda = new LDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
-    } else {
+      lda = new BasicLDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
+    } else if (args.length > 0 && args(0) == "sparselda") {
       lda = new SparseLDA(docs, numTopics, dict.lookup.size, 0.1, 0.1)
+    } else{
+      lda = new MalletLDA(docs, numTopics)
     }
 
     0 until 100 foreach { i =>
@@ -86,4 +93,32 @@ object TextDemo {
       println(s"time = ${(t2 - t).toDouble / 1e+9} seconds")
     }
   }
+}
+
+object BuildModel {
+  val mapper = new ObjectMapper()
+  mapper.registerModule(DefaultScalaModule)
+  def main(args: Array[String]): Unit = {
+    val sr = new SNAPReader
+    val data = sr.read(new File(getClass.getResource("/text/SanDiskUltra64GB.txt").toURI))
+    val texts = data.map(_.reviewText)
+    val sdocs = texts.map(t => NLPCore.parse(t).flatMap { case (k, v) => Array.fill(v)(k) }.toSeq)
+    val dict = new Dict()
+    val docs = sdocs.map(_.map(dict.add))
+    val numTopics = 128
+    val lda = new MalletLDA(docs, numTopics)
+    lda.run(1000)
+    val theta = lda.computeTheta()
+    val docVecs = theta.map(_.toSeq.sorted.map(_._2))
+    val model = new File("modelledReview.txt")
+    val writer = new BufferedWriter(new FileWriter(model))
+    data.zip(docVecs).foreach{ d =>
+      writer.write(mapper.writeValueAsString(Map("review"->d._1, "topics" -> d._2)))
+      writer.write("\n")
+      writer.flush()
+    }
+    writer.close()
+  }
+
+
 }

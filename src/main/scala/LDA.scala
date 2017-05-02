@@ -6,7 +6,18 @@ import scala.io.Source
 /**
   * Created by Aaron Li (aaron@potatos.io) on 4/28/17.
   */
-class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, beta: Double) {
+abstract class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, beta: Double) {
+  def run(numIters: Int): Unit
+
+  def computeTheta(): Array[Map[Int, Double]]
+
+  def computePhi(): Array[Map[Int, Double]]
+
+  def getTopicProbs(): Array[Double]
+}
+
+class BasicLDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, beta: Double)
+  extends LDA(docs, numTopics, numVocab, alpha, beta) {
   // performance hack - pack two ints into a single long
   def long(a: Int, b: Int): Long = (a.toLong << 32) | b.toLong
 
@@ -65,7 +76,7 @@ class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, bet
     t - 1
   }
 
-  def run(numIters: Int): Unit = {
+  override def run(numIters: Int): Unit = {
     for (i <- 0 until numIters; d <- docs.indices; l <- docs(d).indices) {
       val k = z(d)(l)
       val w = docs(d)(l)
@@ -80,17 +91,17 @@ class LDA(docs: Seq[Seq[Int]], numTopics: Int, numVocab: Int, alpha: Double, bet
   }
 
   // compute latent variable theta (used in the end)
-  def computeTheta(): Array[Map[Int, Double]] =
+  override def computeTheta(): Array[Map[Int, Double]] =
     ndk.groupBy(kv => ints(kv._1)._1).map { case (d, m) => m.map { case (dk, c) => ints(dk)._2 -> (c + alpha) / (docs(d).length + alphaSum) }.toMap }.toArray
 
   // compute latent variable phi (used in the end)
-  def computePhi(): Array[Map[Int, Double]] =
+  override def computePhi(): Array[Map[Int, Double]] =
     nwk.groupBy { case (wk, _) => ints(wk)._2 }.map { case (k, m) =>
       m.map { case (wk, c) => ints(wk)._1 -> ((c + beta) / (nk(k) + betaSum)) }.toMap
     }.toArray
 
   // compute topic probabilities
-  def getTopicProbs(): Array[Double] =
+  override def getTopicProbs(): Array[Double] =
     nk.map(e => e.toDouble / totalNumTokens)
 }
 

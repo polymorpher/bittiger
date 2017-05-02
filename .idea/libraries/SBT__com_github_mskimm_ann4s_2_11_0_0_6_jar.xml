@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SBT: com.github.mskimm:ann4s_2.11:0.0.6:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.mskimm/ann4s_2.11/jars/ann4s_2.11-0.0.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.mskimm/ann4s_2.11/srcs/ann4s_2.11-0.0.6-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
